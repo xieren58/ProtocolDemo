@@ -4,7 +4,9 @@
 
 ## 集成
 
-- 工具包下载地址：
+- demo app下载：[https://github.com/yzkj2213/ProtocolDemo/tree/master/app/apk](https://github.com/yzkj2213/ProtocolDemo/tree/master/app/apk)
+- 开发工具包下载地址：
+    - [v0.1](http://app.izis.cn/GoWebService/boardmonitor_v0.1.aar)
 
 ## 核心类
 
