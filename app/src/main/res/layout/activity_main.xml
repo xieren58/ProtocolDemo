@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="连接电子棋盘"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnDisconnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:enabled="false"
+        android:text="断开连接"
+        app:layout_constraintStart_toEndOf="@+id/btnConnect"
+        app:layout_constraintTop_toTopOf="@+id/btnConnect" />
+
+    <Button
+        android:id="@+id/btnAllChess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:enabled="false"
+        android:text="获取全盘数据"
+        app:layout_constraintStart_toStartOf="@+id/btnConnect"
+        app:layout_constraintTop_toBottomOf="@+id/btnConnect" />
+
+    <TextView
+        android:id="@+id/tvHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnBlackLamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:enabled="false"
+        android:text="黑方行棋指示灯"
+        app:layout_constraintStart_toStartOf="@+id/btnAllChess"
+        app:layout_constraintTop_toBottomOf="@+id/btnAllChess" />
+
+    <Button
+        android:id="@+id/btnWhiteLamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:enabled="false"
+        android:text="白方行棋指示灯"
+        app:layout_constraintStart_toEndOf="@+id/btnBlackLamp"
+        app:layout_constraintTop_toTopOf="@+id/btnBlackLamp" />
+
+    <Button
+        android:id="@+id/btnLamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:enabled="false"
+        android:text="亮棋盘灯"
+        app:layout_constraintStart_toStartOf="@+id/btnBlackLamp"
+        app:layout_constraintTop_toBottomOf="@+id/btnBlackLamp" />
+
+    <Button
+        android:id="@+id/btnWarning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:enabled="false"
+        android:text="棋盘报警"
+        app:layout_constraintStart_toEndOf="@+id/btnDisconnect"
+        app:layout_constraintTop_toTopOf="@+id/btnDisconnect" />
+
+    <com.lxf.demo.LampView
+        android:id="@+id/lampBlack"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="@+id/btnLamp"
+        app:layout_constraintTop_toBottomOf="@+id/btnLamp" />
+
+    <com.lxf.demo.LampView
+        android:id="@+id/lampWhite"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="32dp"
+        app:layout_constraintStart_toEndOf="@+id/lampBlack"
+        app:layout_constraintTop_toTopOf="@+id/lampBlack" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="黑方拍钟"
+        app:layout_constraintEnd_toEndOf="@+id/lampBlack"
+        app:layout_constraintStart_toStartOf="@+id/lampBlack"
+        app:layout_constraintTop_toBottomOf="@+id/lampBlack" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="白方拍钟"
+        app:layout_constraintEnd_toEndOf="@+id/lampWhite"
+        app:layout_constraintStart_toStartOf="@+id/lampWhite"
+        app:layout_constraintTop_toBottomOf="@+id/lampWhite" />
+
+    <Switch
+        android:id="@+id/switchAutoGetData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:enabled="false"
+        android:text="是否自动获取全盘数据"
+        app:layout_constraintBottom_toBottomOf="@+id/btnAllChess"
+        app:layout_constraintStart_toEndOf="@+id/btnAllChess"
+        app:layout_constraintTop_toTopOf="@+id/btnAllChess" />
+
+    <EditText
+        android:id="@+id/etPosition"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:ems="10"
+        android:inputType="number"
+        android:text="181"
+        android:hint="数字1~361"
+        app:layout_constraintStart_toEndOf="@+id/btnLamp"
+        app:layout_constraintTop_toTopOf="@+id/btnLamp" />
+
+    <TextView
+        android:id="@+id/tvColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="31dp"
+        android:text="r236g039b039"
+        android:textColor="#EC2727"
+        app:layout_constraintBottom_toBottomOf="@+id/etPosition"
+        app:layout_constraintStart_toEndOf="@+id/etPosition"
+        app:layout_constraintTop_toTopOf="@+id/etPosition" />
+
+    <CheckBox
+        android:id="@+id/cbUIShow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:enabled="false"
+        android:text="UI展示"
+        app:layout_constraintBottom_toBottomOf="@+id/switchAutoGetData"
+        app:layout_constraintStart_toEndOf="@+id/switchAutoGetData"
+        app:layout_constraintTop_toTopOf="@+id/switchAutoGetData" />
+
+    <com.lxf.demo.TileView
+        android:id="@+id/tileView"
+        android:layout_width="200px"
+        android:layout_height="200px"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/lampWhite"
+        app:layout_constraintTop_toBottomOf="@+id/tvColor" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
