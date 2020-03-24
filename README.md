@@ -9,7 +9,11 @@
     * [指定当前对局为几路棋盘](#%E6%8C%87%E5%AE%9A%E5%BD%93%E5%89%8D%E5%AF%B9%E5%B1%80%E4%B8%BA%E5%87%A0%E8%B7%AF%E6%A3%8B%E7%9B%98)
     * [主动请求全盘数据](#%E4%B8%BB%E5%8A%A8%E8%AF%B7%E6%B1%82%E5%85%A8%E7%9B%98%E6%95%B0%E6%8D%AE)
     * [点亮行棋指示灯](#%E7%82%B9%E4%BA%AE%E8%A1%8C%E6%A3%8B%E6%8C%87%E7%A4%BA%E7%81%AF)
-    * [棋盘点亮灯](#%E6%A3%8B%E7%9B%98%E7%82%B9%E4%BA%AE%E7%81%AF)
+    * [棋盘单个点亮灯](#%E6%A3%8B%E7%9B%98%E5%8D%95%E4%B8%AA%E7%82%B9%E4%BA%AE%E7%81%AF)
+    * [棋盘多个点同时亮灯](#%E6%A3%8B%E7%9B%98%E5%A4%9A%E4%B8%AA%E7%82%B9%E5%90%8C%E6%97%B6%E4%BA%AE%E7%81%AF)
+      * [棋盘显示对号](#%E6%A3%8B%E7%9B%98%E6%98%BE%E7%A4%BA%E5%AF%B9%E5%8F%B7)
+      * [棋盘显示叉号](#%E6%A3%8B%E7%9B%98%E6%98%BE%E7%A4%BA%E5%8F%89%E5%8F%B7)
+      * [棋盘显示OK](#%E6%A3%8B%E7%9B%98%E6%98%BE%E7%A4%BAok)
     * [关闭所有指示灯](#%E5%85%B3%E9%97%AD%E6%89%80%E6%9C%89%E6%8C%87%E7%A4%BA%E7%81%AF)
     * [黑方拍钟](#%E9%BB%91%E6%96%B9%E6%8B%8D%E9%92%9F)
     * [白方拍钟](#%E7%99%BD%E6%96%B9%E6%8B%8D%E9%92%9F)
@@ -28,7 +32,8 @@
 
 - demo app下载：[https://github.com/yzkj2213/ProtocolDemo/tree/master/app/apk](https://github.com/yzkj2213/ProtocolDemo/tree/master/app/apk)
 - 开发工具包下载地址：
-    - [v0.1](http://app.izis.cn/GoWebService/boardmonitor_v0.1.aar)
+    - [v0.1](http://app.izis.cn/GoWebService/boardmonitor_v0.1.zip)
+- 电子屏幕桌面经过处理，只能展示出appId以cn.izis开头的应用
 
 ## 核心类
 
@@ -133,7 +138,7 @@ boardConnector.write(BoardProtocol.allChess())
     }
 ```
 
-### 棋盘点亮灯
+### 棋盘单个点亮灯
 
 下发指令：
 
@@ -147,6 +152,62 @@ boardConnector.write(BoardProtocol.allChess())
      * @param colorB   蓝色值
      */
     public static String lampPosition(int position, int colorR, int colorG, int colorB) {
+        //...
+    }
+```
+
+### 棋盘多个点同时亮灯
+
+下发指令：
+
+```java
+    /**
+     * 同时亮多个指示灯
+     *
+     * @param positions 需要亮灯的位置，必须是361长串，格式为"001201000200"；
+     *                  1表示亮绿灯  2表示亮红灯
+     * @param lightType 亮灯的亮度。1表示低亮，2表示中亮，3表示高亮。只有在亮灯个数小于50的情况下有效
+     */
+    public static String lampMultiple(String positions, int lightType) {
+        //...
+    }
+```
+
+#### 棋盘显示对号
+
+下发指令：
+
+```java
+    /**
+     * 棋盘显示一个对号（一般做题时使用）
+     */
+    public static String showRight() {
+        //...
+    }
+```
+
+#### 棋盘显示叉号
+
+下发指令：
+
+```java
+    /**
+     * 棋盘显示一个叉号（一般做题时使用）
+     */
+    public static String showError() {
+       //...
+    }
+```
+
+#### 棋盘显示OK
+
+下发指令：
+
+```java
+    /**
+     * 棋盘显示一个OK（一般做题时使用）
+     */
+    public static String showOK() {
         //...
     }
 ```

@@ -12,6 +12,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity(), BoardConnectListener, BoardDataListener {
     private lateinit var boardConnector: BoardConnector
@@ -81,6 +82,27 @@ class MainActivity : AppCompatActivity(), BoardConnectListener, BoardDataListene
         cbUIShow.setOnCheckedChangeListener { _, isChecked ->
             tileView.visibility = if (isChecked) View.VISIBLE else View.INVISIBLE
         }
+
+        btnLampMultiple.setOnClickListener {
+            val positions = StringBuilder()
+            for (i in 1..361){
+                positions.append(Random.nextInt(3))
+            }
+            println(positions)
+            boardConnector.write(BoardProtocol.lampMultiple(positions.toString(),3))
+        }
+
+        btnShowRight.setOnClickListener {
+            boardConnector.write(BoardProtocol.showRight())
+        }
+
+        btnShowError.setOnClickListener {
+            boardConnector.write(BoardProtocol.showError())
+        }
+        btnShowOK.setOnClickListener {
+            boardConnector.write(BoardProtocol.showOK())
+        }
+
     }
 
     private fun selectColor(listener: (r: Int, g: Int, b: Int) -> Unit) {
@@ -139,6 +161,10 @@ class MainActivity : AppCompatActivity(), BoardConnectListener, BoardDataListene
         btnWarning.isEnabled = isConnect
         switchAutoGetData.isEnabled = isConnect
         cbUIShow.isEnabled = isConnect
+        btnLampMultiple.isEnabled = isConnect
+        btnShowRight.isEnabled = isConnect
+        btnShowError.isEnabled = isConnect
+        btnShowOK.isEnabled = isConnect
     }
 
     override fun onBoardDisConnect() {

@@ -31,7 +31,7 @@
         android:id="@+id/btnAllChess"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:enabled="false"
         android:text="获取全盘数据"
         app:layout_constraintStart_toStartOf="@+id/btnConnect"
@@ -180,5 +180,45 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/lampWhite"
         app:layout_constraintTop_toBottomOf="@+id/tvColor" />
+
+    <Button
+        android:id="@+id/btnLampMultiple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:enabled="false"
+        android:text="亮多个灯"
+        app:layout_constraintStart_toStartOf="@+id/lampBlack"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <Button
+        android:id="@+id/btnShowRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:enabled="false"
+        android:text="显示对号"
+        app:layout_constraintStart_toEndOf="@+id/btnLampMultiple"
+        app:layout_constraintTop_toTopOf="@+id/btnLampMultiple" />
+
+    <Button
+        android:id="@+id/btnShowError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:enabled="false"
+        android:text="显示叉号"
+        app:layout_constraintStart_toEndOf="@+id/btnShowRight"
+        app:layout_constraintTop_toTopOf="@+id/btnShowRight" />
+
+    <Button
+        android:id="@+id/btnShowOK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:enabled="false"
+        android:text="显示OK"
+        app:layout_constraintStart_toEndOf="@+id/btnShowError"
+        app:layout_constraintTop_toTopOf="@+id/btnShowError" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
