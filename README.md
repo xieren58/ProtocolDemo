@@ -40,7 +40,7 @@
 
 ```kotlin
     //boardSize表示连接成功后要设置的棋盘路数
-	private fun connectBoard(boardSize:Int = 19) {
+    private fun connectBoard(boardSize:Int = 19) {
         boardConnector = BoardConnector.Builder(this)
             .connectListener(this)
             .dataListener(this)
@@ -111,7 +111,7 @@ boardConnector.write(BoardProtocol.allChess())
 - 中间数字：实时的棋盘数据
   - 0表示该位置为空白，1表示该位置有黑子，2表示该位置有白子
   - 数字长度为设置的棋盘总子数，19路为361，9路为81，依次类推
-  - 顺序以黑方左手边为第一个位置，向右依次递增
+  - 顺序以黑方左手边为第一个位置，向右依次递增，每行都是从左边开始
 - #：数据尾，表示该条数据到此结束
 
 ### 点亮行棋指示灯
