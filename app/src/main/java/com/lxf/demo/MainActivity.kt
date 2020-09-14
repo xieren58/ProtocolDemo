@@ -27,8 +27,8 @@ class MainActivity : AppCompatActivity(), BoardConnectListener, BoardDataListene
             connectBoard()
         }
         btnDisconnect.setOnClickListener {
-            boardConnector.write(BoardProtocol.closeAllLamp())
-            boardConnector.write(BoardProtocol.disConnect())
+            boardConnector.writeCode(BoardProtocol.Down.closeAllLamp())
+            boardConnector.writeCode(BoardProtocol.Down.disConnect())
             boardConnector.callDestroy()
 
             clearHint()
@@ -38,27 +38,27 @@ class MainActivity : AppCompatActivity(), BoardConnectListener, BoardDataListene
 
         btnAllChess.setOnClickListener {
             clearHint()
-            boardConnector.write(BoardProtocol.allChess())
+            boardConnector.writeCode(BoardProtocol.Down.allChess())
         }
 
         btnBlackLamp.setOnClickListener {
             clearHint()
-            boardConnector.write(BoardProtocol.lamp(1))
+            boardConnector.writeCode(BoardProtocol.Down.lamp(1))
         }
 
         btnWhiteLamp.setOnClickListener {
             clearHint()
-            boardConnector.write(BoardProtocol.lamp(2))
+            boardConnector.writeCode(BoardProtocol.Down.lamp(2))
         }
 
         btnWarning.setOnClickListener {
             clearHint()
-            boardConnector.write(BoardProtocol.warning())
+            boardConnector.writeCode(BoardProtocol.Down.warning())
         }
 
         switchAutoGetData.setOnCheckedChangeListener { _, isChecked ->
             clearHint()
-            boardConnector.write(BoardProtocol.autoSendAllChess(isChecked))
+            boardConnector.writeCode(BoardProtocol.Down.autoSendAllChess(isChecked))
         }
         btnLamp.setOnClickListener {
             clearHint()
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity(), BoardConnectListener, BoardDataListene
             val r = tvColor.text.substring(1..3).toInt()
             val g = tvColor.text.substring(5..7).toInt()
             val b = tvColor.text.substring(9..11).toInt()
-            boardConnector.write(BoardProtocol.lampPosition(position, r, g, b))
+            boardConnector.writeCode(BoardProtocol.Down.lampPosition(position, r, g, b))
         }
         tvColor.setOnClickListener {
             selectColor { r, g, b ->
@@ -89,18 +89,18 @@ class MainActivity : AppCompatActivity(), BoardConnectListener, BoardDataListene
                 positions.append(Random.nextInt(3))
             }
             println(positions)
-            boardConnector.write(BoardProtocol.lampMultiple(positions.toString(),3))
+            boardConnector.writeCode(BoardProtocol.Down.lampMultiple(positions.toString(),3))
         }
 
         btnShowRight.setOnClickListener {
-            boardConnector.write(BoardProtocol.showRight())
+            boardConnector.writeCode(BoardProtocol.Down.showRight())
         }
 
         btnShowError.setOnClickListener {
-            boardConnector.write(BoardProtocol.showError())
+            boardConnector.writeCode(BoardProtocol.Down.showError())
         }
         btnShowOK.setOnClickListener {
-            boardConnector.write(BoardProtocol.showOK())
+            boardConnector.writeCode(BoardProtocol.Down.showOK())
         }
 
     }
@@ -186,7 +186,14 @@ class MainActivity : AppCompatActivity(), BoardConnectListener, BoardDataListene
     override fun onConnectBoardSuccess() {
         runOnUiThread {
             toast("电子棋盘连接成功")
-            boardConnector.write(BoardProtocol.autoSendAllChess(false))
+//            boardConnector.write(BoardProtocol.autoSendAllChess(false))
+            boardConnector.writeCode("~CTS1#")
+
+            boardConnector.writeCode("~GSV#")
+            boardConnector.writeCode("~GSV#")
+
+            boardConnector.writeCode("~GVE#")
+            boardConnector.writeCode("~GVE#")
             btnConnect.isEnabled = false
             state(true)
         }

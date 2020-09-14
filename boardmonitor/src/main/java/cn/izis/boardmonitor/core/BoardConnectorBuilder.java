@@ -44,6 +44,11 @@ public interface BoardConnectorBuilder<B extends BoardConnectorBuilder,R extends
     /**
      * 棋盘连接监听器
      */
+    B receiveType(BoardConnector.ReceiveType receiveType);
+
+    /**
+     * 棋盘连接监听器
+     */
     B connectListener(BoardConnectListener listener);
 
     /**

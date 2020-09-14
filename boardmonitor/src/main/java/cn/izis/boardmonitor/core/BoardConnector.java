@@ -7,11 +7,19 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
+
 import cn.izis.boardmonitor.listener.BoardConnectListener;
 import cn.izis.boardmonitor.listener.BoardDataListener;
 import cn.izis.boardmonitor.protocol.BoardProtocol;
 import cn.izis.boardmonitor.receiver.PLMultiLibReceiver;
 import tw.com.prolific.pl2303multilib.PL2303MultiLib;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,11 +32,33 @@ import java.util.regex.Pattern;
  * 棋盘连接
  */
 public class BoardConnector {
+
+    /**
+     * 处理的返回数据种类
+     */
+    public enum ReceiveType {
+        /**
+         * 处理返回的所有以~开头，#结尾的数据  ~?[^~#]*#
+         */
+        ALL("~?[^~#]*#"),
+        /**
+         * 只处理符合标准的数据  ~?[A-Z]{3}[^~#]*#
+         */
+        STANDARD("~?[A-Z]{3}[^~#]*#");
+
+        public final String regex;
+
+        ReceiveType(String regex) {
+            this.regex = regex;
+        }
+    }
+
     private static final String ACTION_USB_PERMISSION = "cn.izis.boardmonitor.core.BoardConnector.USB_PERMISSION";
     private static final int deviceIndex = 0;
     static boolean mDebug = false;
     private int delayTime = 80;         // 50 尝试改成30试试，处理得太慢，缓冲区信息被挤掉？  // 40改100
-    private PL2303MultiLib.BaudRate mBaudrate = PL2303MultiLib.BaudRate.B115200;
+    private ReceiveType receiveType = ReceiveType.STANDARD;
+    private PL2303MultiLib.BaudRate mBaudRate = PL2303MultiLib.BaudRate.B115200;
     private PL2303MultiLib.DataBits mDataBits = PL2303MultiLib.DataBits.D8;
     private PL2303MultiLib.Parity mParity = PL2303MultiLib.Parity.NONE;
     private PL2303MultiLib.StopBits mStopBits = PL2303MultiLib.StopBits.S1;
@@ -70,7 +100,7 @@ public class BoardConnector {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        boolean res = mSerialMulti.PL2303OpenDevByUARTSetting(deviceIndex, mBaudrate, mDataBits, mStopBits, mParity, mFlowControl);
+                        boolean res = mSerialMulti.PL2303OpenDevByUARTSetting(deviceIndex, mBaudRate, mDataBits, mStopBits, mParity, mFlowControl);
                         if (!res) {
                             log("打开连接失败");
                             if (mConnectListener != null) {
@@ -89,7 +119,7 @@ public class BoardConnector {
                             mPlMultiLibReceiver = new PLMultiLibReceiver(mSerialMulti, mConnectListener, deviceIndex);
                             mContext.registerReceiver(mPlMultiLibReceiver, filter);
 
-                            write(BoardProtocol.Down.boardSize(boardSize));
+                            writeCode(BoardProtocol.Down.boardSize(boardSize));
                             if (mConnectListener != null) {
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override
@@ -114,7 +144,7 @@ public class BoardConnector {
             @Override
             public void run() {
                 while (true) {
-                    sleep(delayTime);
+                    sleep(40);
 
                     if (mSerialMulti != null) {
                         int readLen = 0;//一次读取到的数据长度
@@ -132,8 +162,8 @@ public class BoardConnector {
 
                             String curReadData = readData.toString(); // 将获取的棋盘数据转换成字符串
 
-                            log("===之前剩余数据ReadHub:" + readHub);
-                            log("===本次读取curReadData:" + curReadData);
+                            log("===之前缓存数据:" + readHub);
+                            log("===本次读取数据:" + curReadData);
 
                             readHub = String.format("%s%s", readHub, curReadData); // 得到最完整的读取池数据
 
@@ -143,8 +173,6 @@ public class BoardConnector {
                                 readHub = readHub.substring(firstStartCharIndex);
                             }
 
-                            log("===初步处理数据ReadHub:" + readHub);
-
                             String totalCommands;
                             //开头必定为~号
                             //缓存中完整数据后的半截数据
@@ -152,7 +180,7 @@ public class BoardConnector {
                             if (readHub.lastIndexOf("#") > 0) {//包含了#号（不包含则说明不包含一个完整的指令）
                                 if (readHub.lastIndexOf("#") < readHub.length() - 1) {//包含了部分下一条指令
                                     tempRest = readHub.substring(readHub.lastIndexOf("#") + 1); // 得到最后的#号之后的半截数据
-                                }else{
+                                } else {
                                     tempRest = "";
                                 }
 
@@ -161,19 +189,18 @@ public class BoardConnector {
                                 continue; // 继续下一次循环
                             }
 
-                            log("===所有正常指令，可能包含多个:" + totalCommands);
+                            log("===返回指令，可能包含多个:" + totalCommands);
 
                             // ==================包含#号
                             // 解析数据，分解成一条条指令后交给前台调用者处理===================
-                            String p = "~?[^~#]*#";
-                            Pattern r = Pattern.compile(p);
+                            Pattern r = Pattern.compile(receiveType.regex);
                             Matcher m = r.matcher(totalCommands);
                             HashSet<String> set = new HashSet<>();
                             while (m.find()) {
                                 String group = m.group();
                                 set.add(group);
                             }
-                            log("得到完整指令:" + set.toString());
+                            log("===得到有效指令:" + set.toString());
                             for (String s : set) {
                                 if (mDataListener != null)
                                     mDataListener.onReadData(s);// 刚好一条完整指令，则直接通知前台去处理即可
@@ -205,9 +232,11 @@ public class BoardConnector {
         executorService.shutdown();
     }
 
-    // 写入数据
-    public void write(String strWrite) {
-        if (!pl2303LinkExist() || TextUtils.isEmpty(strWrite)) {
+    /**
+     * 写入数据
+     */
+    public void writeCode(String code) {
+        if (!pl2303LinkExist() || TextUtils.isEmpty(code)) {
             if (!pl2303LinkExist()) {
                 if (mConnectListener != null)
                     mConnectListener.onBoardDisConnect();
@@ -218,8 +247,54 @@ public class BoardConnector {
         sleep(delayTime);
 
         if (mSerialMulti != null) {
-            mSerialMulti.PL2303Write(deviceIndex, strWrite.getBytes());
-            log("写入指令：" + strWrite);
+            mSerialMulti.PL2303Write(deviceIndex, code.getBytes());
+            log("写入指令：" + code);
+        }
+    }
+
+    /**
+     * 写入文件
+     *
+     * @param path 文件路径
+     */
+    public void writeFile(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return;
+        }
+        if (mSerialMulti != null) {
+            log("写入文件：" + path);
+            try {
+                byte[] data = toByteArray(file);
+                int max = data.length / 1024 + 1;
+                for (int i = 0; i < max; i++) {
+                    int length = Math.min(data.length - i * 1024, 1024);
+                    byte[] msg = new byte[length];
+                    System.arraycopy(data, i * 1024, msg, 0, length);
+                    mSerialMulti.PL2303Write(deviceIndex, msg);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private byte[] toByteArray(File file) throws IOException {
+        if (!file.exists()) {
+            throw new FileNotFoundException("file not exists");
+        }
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream((int) file.length())) {
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+            int buf_size = 1024;
+            byte[] buffer = new byte[buf_size];
+            int len;
+            while (-1 != (len = in.read(buffer, 0, buf_size))) {
+                bos.write(buffer, 0, len);
+            }
+            return bos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -227,7 +302,7 @@ public class BoardConnector {
         return mSerialMulti != null && mSerialMulti.PL2303IsDeviceConnectedByIndex(deviceIndex);
     }
 
-    public static class Builder implements BoardConnectorBuilder<Builder,BoardConnector> {
+    public static class Builder implements BoardConnectorBuilder<Builder, BoardConnector> {
         private BoardConnector boardConnector;
 
         public Builder(Context context) {
@@ -248,7 +323,7 @@ public class BoardConnector {
 
         @Override
         public Builder baudRate(PL2303MultiLib.BaudRate baudRate) {
-            boardConnector.mBaudrate = baudRate;
+            boardConnector.mBaudRate = baudRate;
             return this;
         }
 
@@ -274,6 +349,12 @@ public class BoardConnector {
         public Builder flowControl(PL2303MultiLib.FlowControl flowControl) {
             boardConnector.mFlowControl = flowControl;
             return null;
+        }
+
+        @Override
+        public Builder receiveType(ReceiveType receiveType) {
+            boardConnector.receiveType = receiveType;
+            return this;
         }
 
         @Override

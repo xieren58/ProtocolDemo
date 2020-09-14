@@ -21,7 +21,6 @@ public class PLMultiLibReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        System.out.println(intent.getAction());
         if (intent.getAction()!=null && intent.getAction().equals(mSerialMulti.PLUART_MESSAGE)) {
             Bundle extras = intent.getExtras();
             if (extras != null) {
