@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -195,7 +195,7 @@ public class BoardConnector {
                             // 解析数据，分解成一条条指令后交给前台调用者处理===================
                             Pattern r = Pattern.compile(receiveType.regex);
                             Matcher m = r.matcher(totalCommands);
-                            HashSet<String> set = new HashSet<>();
+                            LinkedHashSet<String> set = new LinkedHashSet<>();
                             while (m.find()) {
                                 String group = m.group();
                                 set.add(group);
